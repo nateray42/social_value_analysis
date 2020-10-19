@@ -1,30 +1,26 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[1]:
-
-
+# %%
 import requests
 import pandas as pd
-from bs4 import BeautifulSoup
 import re
 import operator
 import time
 import datetime
+from bs4 import BeautifulSoup
+from tqdm import notebook
 
 
-# In[18]:
-
-
+# %%
 def main_search(keyword):
     # 한겨레 신문사 검색 URL
     url = 'http://search.hani.co.kr/Search?command=query&media=news&sort=d&period=all&'
     column_names = ['Link', 'Title', 'Article']
     df = pd.DataFrame(columns = column_names)
-    dt = datetime.datetime.now()
-    date = dt.strftime('%Y_%m_%d')
+    index = df.index
+    index.name = keyword
 
-    for page in range(5):
+    for page in notebook.tqdm(range(20)):
         req_params = {
             'keyword': keyword,
             'pageseq': page
@@ -33,6 +29,8 @@ def main_search(keyword):
         html = response.text.strip()
         soup = BeautifulSoup(html, 'lxml')
         results = soup.select('ul.search-result-list li dt a')
+        banned_list = ['인사', '알림', '[']
+        
         for link in results:
             d = {}
             d['Link'] = 'http:' + link.get('href')
@@ -42,19 +40,18 @@ def main_search(keyword):
             #news_title = link.text 
             #print(news_url, news_title)
             #hani_article(news_url)
-            df.append(d, ignore_index=True)
-    df.to_csv(date + '[' + keyword + ']' + '.csv', header=False)
+            if all(x not in link.text for x in banned_list):
+                df_length = len(df)
+                df.loc[df_length] = d
     return df
 
 
-# In[19]:
-
-
+# %%
 def hani_article(url):
+    # 한겨례 기사 크롤링
     response = requests.get(url, verify=False)
     html = response.text.strip()
-    # print(html[:500])
-    soup = BeautifulSoup(html, 'html5lib')
+    soup = BeautifulSoup(html, 'lxml')
     raw = soup.select('div.article-text div.text')[0]
     if raw.find('strong') is not None:
         unwanted = raw.find('strong')
@@ -64,37 +61,35 @@ def hani_article(url):
     return article
 
 
-# In[20]:
-
-
+# %%
 def clean_text(text):
     cleaned_text = re.sub('[a-zA-Z]', '', text)
-    cleaned_text = re.sub('[\{\}\[\]\/?.,;:|\)*~`!^·\-_+<>▶▽△▲⊙♡◀※◇■━@\#$%&\\\=\(\'\"ⓒ(\n)(\t)‘’“”]', ' ', cleaned_text)
+    cleaned_text = re.sub('[\{\}\[\]\/?.,;:|\)*~`!^·\-_+<>▶▽△▲⊙♡◀※◇■━◎○@\#$%&\\\=\(\'\"ⓒ(\n)(\t)‘’“”〃]', ' ', cleaned_text)
+    cleaned_text = re.sub('㎢㈜', ' ', cleaned_text)
     cleaned_text = cleaned_text.replace("🇲\u200b🇮\u200b🇱\u200b🇱\u200b🇮\u200b🇪\u200b", "")
-    return cleaned_text
+    output = ' '.join(cleaned_text.split())
+    return output
 
 
-# In[21]:
+# %%
+def save_func(df):
+    dt = datetime.datetime.now()
+    date = dt.strftime('%Y_%m_%d')
+    title = df.index.name
+    df.to_csv(date + '[' + title + ']' + '.csv', header=False)
 
 
+# %%
 #if __name__ == '__main__':
     #hani_search('사회적 가치 기업')
 
 
-# In[22]:
+# %%
+df = main_search('기업 사회적 가치')
 
 
-main_search('기업 사회적 가치')
+# %%
+df.head(50)
 
-
-# In[23]:
-
-
-df.head()
-
-
-# In[ ]:
-
-
-
-
+# %%
+save_func(df)
