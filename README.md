@@ -4,7 +4,14 @@
 
 사회적 가치를 분석합니다.
 
-# References
+## Examples
+
+<img src="https://user-images.githubusercontent.com/58092114/96550735-2fe43980-12ec-11eb-98e1-e2971eddc239.png" width="400">
+
+
+한겨레 뉴스 '기업 사회적 가치' 로 검색한 단어들의 워드클라우드. 
+
+## References
 
 본 프로젝트의 코드들은 다음 출처의 도움으로 작성되었습니다.
 
