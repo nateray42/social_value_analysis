@@ -2,11 +2,9 @@
 # coding: utf-8
 # %%
 import requests
-import pandas as pd
 import re
-import operator
-import time
 import datetime
+import pandas as pd
 from bs4 import BeautifulSoup
 from tqdm import notebook
 
@@ -36,10 +34,7 @@ def main_search(keyword):
             d['Link'] = 'http:' + link.get('href')
             d['Title'] = link.text
             d['Article'] = hani_article(d['Link'])
-            #news_url = link.get('href') 
-            #news_title = link.text 
-            #print(news_url, news_title)
-            #hani_article(news_url)
+            #특정 기사 제외
             if all(x not in link.text for x in banned_list):
                 df_length = len(df)
                 df.loc[df_length] = d
@@ -76,12 +71,12 @@ def save_func(df):
     dt = datetime.datetime.now()
     date = dt.strftime('%Y_%m_%d')
     title = df.index.name
-    df.to_csv(date + '[' + title + ']' + '.csv', header=False)
+    df.to_csv('../_Data/' + date + '[' + title + ']' + '.csv')
 
 
 # %%
 #if __name__ == '__main__':
-    #hani_search('사회적 가치 기업')
+    #main_search('사회적 가치 기업')
 
 
 # %%
@@ -89,7 +84,6 @@ df = main_search('기업 사회적 가치')
 
 
 # %%
-df.head(50)
+save_func(df)
 
 # %%
-save_func(df)
