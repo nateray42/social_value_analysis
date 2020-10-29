@@ -87,8 +87,18 @@ class Main_search:
     def save_func(self):
         dt = datetime.datetime.now()
         date = dt.strftime('%Y_%m_%d_%H%M%S')
-        self.df.to_csv('../_data/' + '[' + self.agent + ']' + date + '[' + self.keyword + ']'\
-                  + '.csv')
+        fname = '[' + self.agent + ']' + date + '[' + self.keyword + ']'
+        self.df.to_csv('../_data/' + fname + '.csv', index = False)
+        df = pd.read_csv('../_system/file_list.csv')
+        new = {}
+        new['agent'] = self.agent
+        new['keyword'] = self.keyword
+        new['pages'] = self.page
+        new['date'] = date
+        new['fname'] = fname + '.csv'
+        df_length = len(df)
+        df.loc[df_length] = new
+        df.to_csv('../_system/file_list.csv', index=False)
         
     def show_data(self):
         print(self.df.head())
@@ -157,19 +167,32 @@ class Hnky_search(Main_search):
 # %%
 def main_func(agent, keyword, pages, tf):
     
-    if agent == '한겨레':
-        func = Hani_search(keyword, pages)
-    elif agent == '중앙':
-        func = Joins_search(keyword, pages)
-    elif agent == '한경':
-        func = Hnky_search(keyword, pages)
+    input_dict = {
+        '전부' : 0,
+        '한겨레' : 1,
+        '중앙' : 2,
+        '한경' : 3
+    }
+    
+    output_dict = {
+        1 : Hani_search(keyword, pages),
+        2 : Joins_search(keyword, pages),
+        3 : Hnky_search(keyword, pages)
+    }
+    
+    number = input_dict.get(agent)
+    
+    if number == 0:
+        for calls in output_dict:
+            func = output_dict.get(calls)
+            df = func.search() 
+            func.save_func() if tf else tf
     else:
-        print('다시 입력해줘~')
-        
-    df = func.search() 
-    func.save_func() if tf else tf
+        func = output_dict.get(number)
+        df = func.search() 
+        func.save_func() if tf else tf
+    
     print('작업 완료했어~')
-
 
 
 # %%
@@ -180,6 +203,6 @@ if __name__ == '__main__':
     save_tf = '[!] csv로 저장할래? : '
     tf = query_yes_no(save_tf)
     main_func(agent, keyword, pages, tf)
-    
+
 
 # %%
