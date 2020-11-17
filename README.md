@@ -17,6 +17,7 @@
 
 ### Overall 
 한국어 임베딩 by ratsgo (https://github.com/ratsgo/embedding)
+LOVIT X DATA SCIENCE by lovid (https://lovit.github.io/)
 
 #### crawling/crawling.py
 크롤링 (5), beautifulsoup4로 네이버 기사 크롤링하기 by 차준영 (https://dsbook.tistory.com/54)
@@ -25,3 +26,4 @@
 
 #### embedding/word_embedding.py
 임베딩 - Word2Vec by Joyhong (https://joyhong.tistory.com/132)
+
