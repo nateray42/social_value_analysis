@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 # %%
-corpus_path = '../_data/preprocessed/2020_11_17_220802[text].txt'
+corpus_path = '../_data/preprocessed/2020_11_19_142910[text].txt'
 
 class Documents:
     def __init__(self, path):
@@ -16,11 +16,14 @@ documents = Documents(corpus_path)
 
 # %%
 import pyLDAvis
+import pickle
+import gensim
+
+from sklearn.feature_extraction.text import CountVectorizer
+import codecs
 
 
 # %%
-import gensim
-
 dictionary = gensim.corpora.Dictionary(documents)
 print('dictionary size : %d' % len(dictionary))
 
@@ -28,14 +31,17 @@ print('dictionary size : %d' % len(dictionary))
 # %%
 from collections import Counter
 
-min_count = 40
+min_count = 50
 word_counter = Counter((word for words in documents for word in words))
 removal_word_idxs = {
     dictionary.token2id[word] for word, count in word_counter.items()
     if count < min_count
 }
 
+del_ids = [k for k,word in dictionary.items() if len(word) < 2 ]
+
 dictionary.filter_tokens(removal_word_idxs)
+dictionary.filter_tokens(bad_ids=del_ids)
 dictionary.compactify()
 print('dictionary size : %d' % len(dictionary))
 
@@ -62,35 +68,6 @@ corpus = Corpus(corpus_path, dictionary)
 for i, doc in enumerate(corpus):
     if i >= 5: break
     print(doc)
-
-
-# %%
-import pickle
-
-data_path = '../_model/2016-10-20-news-bow.pkl'
-
-with open(data_path, 'rb') as f:
-    params = pickle.load(f)
-    x = params['x']
-    index2word = params['index2word']
-    word2index = params['word2index']
-
-
-# %%
-with open("../_model/2016-10-20-news-bow.pkl","rb") as fr:
-    data = pickle.load(fr)
-print(data)
-
-
-# %%
-import gensim
-from gensim.corpora.dictionary import Dictionary
-
-corpus = gensim.matutils.Sparse2Corpus(x, documents_columns=False)
-dictionary = Dictionary.from_corpus(
-    corpus,
-    id2word = dict(enumerate(index2word))
-)
 
 
 # %%
@@ -135,7 +112,3 @@ pyLDAvis.save_html(prepared_data, pyldavis_html_path)
 
 
 # %%
-
-
-
-
