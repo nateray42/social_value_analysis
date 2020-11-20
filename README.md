@@ -27,3 +27,6 @@ LOVIT X DATA SCIENCE by lovid (https://lovit.github.io/)
 #### embedding/word_embedding.py
 임베딩 - Word2Vec by Joyhong (https://joyhong.tistory.com/132)
 
+#### visualizing/networkx.py
+NetworkX 파이썬 패키지를 이용한 네트워크 그래프 작성 by 유병혁 (http://blog.daum.net/geoscience/1408)
+
