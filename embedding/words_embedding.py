@@ -12,7 +12,7 @@ import pandas as pd
 from eunjeon import Mecab
 
 # %%
-corpus_fname = '../_data/2020_10_29-192453.txt'
+corpus_fname = '../_data/2020_11_17_150054.txt'
 
 # %%
 mecab = Mecab()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 # %%
-corpus_path = '../_data/preprocessed/2020_11_19_142910[text].txt'
+corpus_path = '../_data/preprocessed/donga.txt'
 
 class Documents:
     def __init__(self, path):
@@ -29,20 +29,57 @@ print('dictionary size : %d' % len(dictionary))
 
 
 # %%
+f = open('../_system/stopwords.txt', 'r', encoding = 'utf-8')
+stopwords = f.read().splitlines()
+f.close()
+
+# %%
+f = open('../_system/whitelist.txt', 'r', encoding = 'utf-8')
+whitelist = f.read().splitlines()
+f.close()
+
+# %%
 from collections import Counter
 
 min_count = 50
 word_counter = Counter((word for words in documents for word in words))
-removal_word_idxs = {
+
+s1 = {
+    dictionary.token2id[word] for word, count in word_counter.items()
+    if len(word) < 2
+}
+
+s2 = {
     dictionary.token2id[word] for word, count in word_counter.items()
     if count < min_count
 }
 
-del_ids = [k for k,word in dictionary.items() if len(word) < 2 ]
+s3 = {
+    dictionary.token2id[word] for word, count in word_counter.items()
+    if word in stopwords
+}
 
+s1 = s1.union(s2)
+removal_word_idxs = s1.union(s3)
+
+
+# %%
+from collections import Counter
+
+word_counter = Counter((word for words in documents for word in words))
+
+whitelist_idx = {
+    dictionary.token2id[word] for word, count in word_counter.items()
+    if word in whitelist
+}
+
+
+
+# %%
 dictionary.filter_tokens(removal_word_idxs)
-dictionary.filter_tokens(bad_ids=del_ids)
+# dictionary.filter_tokens(good_ids = whitelist_idx)
 dictionary.compactify()
+
 print('dictionary size : %d' % len(dictionary))
 
 
@@ -65,6 +102,7 @@ class Corpus:
         return self.length
 
 corpus = Corpus(corpus_path, dictionary)
+corpus = [x for x in corpus if x]
 for i, doc in enumerate(corpus):
     if i >= 5: break
     print(doc)
@@ -75,7 +113,7 @@ from gensim.models import LdaModel
 
 lda_model_path = '../_model/testLdaModel'
 
-lda_model = LdaModel(corpus, id2word=dictionary, num_topics=50)
+lda_model = LdaModel(corpus, id2word=dictionary, num_topics=40)
 with open(lda_model_path, 'wb') as f:
     pickle.dump(lda_model, f)
 
