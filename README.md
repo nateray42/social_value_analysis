@@ -1,15 +1,22 @@
 # social_value_analysis
 
-한국어 기반 뉴스 분석
+한국어 기반 인터넷 언론사들의 사회적 가치를 토픽 모델링을 통해 분석.
 
-사회적 가치를 분석합니다.
+각 언론사의 특징을 분석합니다.
 
 ## Examples
 
 <img src="https://user-images.githubusercontent.com/58092114/96550735-2fe43980-12ec-11eb-98e1-e2971eddc239.png" width="400">
 
-
 한겨레 뉴스 '기업 사회적 가치' 로 검색한 단어들의 워드클라우드. 
+
+<img src="https://user-images.githubusercontent.com/58092114/99935080-2e9ea480-2da3-11eb-8161-25a23c33efea.png" width="600">
+
+전체 크롤링 데이터 t-SNE 시각화.
+
+<img src="https://user-images.githubusercontent.com/58092114/99935145-5aba2580-2da3-11eb-86a3-6c107c73def2.png" width="600">
+
+경향신문 networkx graph 시각화
 
 ## References
 
